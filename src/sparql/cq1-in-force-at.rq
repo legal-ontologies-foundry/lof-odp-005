@@ -1,0 +1,13 @@
+# CQ1. Which legal content was in force at a given time?
+# Values are xsd:dateTimeStamp; they are cast to xsd:dateTime for comparison.
+PREFIX lof: <https://w3id.org/lof/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?at ?content ?from ?until WHERE {
+  VALUES ?at { "2017-03-15T00:00:00Z"^^xsd:dateTime "2026-03-02T09:00:00Z"^^xsd:dateTime }
+  ?c lof:ODP005_0001102 ?r ; rdfs:label ?content .
+  ?r obo:BFO_0000222/lof:ODP005_0001200 ?from .
+  OPTIONAL { ?r obo:BFO_0000224/lof:ODP005_0001200 ?until }
+  FILTER(xsd:dateTime(STR(?from)) <= ?at && (!BOUND(?until) || xsd:dateTime(STR(?until)) >= ?at))
+} ORDER BY ?at ?content

@@ -1,0 +1,117 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix lof: <https://w3id.org/lof/> .
+
+<https://w3id.org/lof/odp-005.owl> a owl:Ontology ;
+  owl:versionIRI <https://w3id.org/lof/odp-005/releases/0.1.0/odp-005.owl> ;
+  owl:versionInfo "0.1.0" ;
+  dcterms:title "LOF-ODP-005: Legal Time and Versions"@en ;
+  dcterms:description "DRAFT for review by the LOF founding coordinators. An ontology design pattern for the times at which legal content is in force and applies, the legal acts that amend and repeal it, the succession of one item of content by another, the consolidated versions that state the law as it stands during a period, and the periods within which legal positions are to be discharged. Temporal regions are closed: a region includes its first and last instants, whose date-times are recorded to the second."@en ;
+  dcterms:creator "David R. Koepsell" ;
+  dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+  owl:imports <https://w3id.org/lof/odp-005/imports/bfo_import.owl> ,
+    <https://w3id.org/lof/odp-005/imports/odp-001_import.owl> ,
+    <https://w3id.org/lof/odp-005/imports/odp-002_import.owl> ,
+    <https://w3id.org/lof/odp-005/imports/odp-003_import.owl> ,
+    <https://w3id.org/lof/odp-005/imports/odp-004_import.owl> .
+
+
+##### Classes #####
+
+lof:ODP005_0001000 a owl:Class ;
+  rdfs:label "amending act"@en ;
+  skos:definition "A legal act that establishes legal content succeeding some legal content established earlier, or that ends, suspends, or alters the force or scope of such content."@en ;
+  rdfs:comment "Covers textual amendment, insertion, substitution, suspension, and postponement of entry into force. Legal content is not changed by amendment: the amending act establishes new content, which succeeds the amended content in whole or in part."@en ;
+  owl:equivalentClass [ owl:intersectionOf ( lof:ODP001_0001000
+      [ a owl:Restriction ; owl:onProperty lof:ODP005_0001100 ; owl:someValuesFrom lof:ODP001_0001001 ] ) ] .
+
+lof:ODP005_0001001 a owl:Class ;
+  rdfs:label "repeal"@en ;
+  skos:definition "A legal act that establishes that some legal content established earlier ceases to be in force."@en ;
+  rdfs:comment "The repeal is the act; its effect is the last instant of the repealed content's region in force, which may be long after the act (the General Data Protection Regulation was adopted on 27 April 2016 and repealed Directive 95/46/EC with effect from 25 May 2018). Force can also end with no repealing act: by expiry of a sunset clause, implied repeal, desuetude, or annulment. Those are recorded by the last instant of the region alone."@en ;
+  owl:equivalentClass [ owl:intersectionOf ( lof:ODP001_0001000
+      [ a owl:Restriction ; owl:onProperty lof:ODP005_0001101 ; owl:someValuesFrom lof:ODP001_0001001 ] ) ] .
+
+lof:ODP005_0001002 a owl:Class ;
+  rdfs:label "consolidated version"@en ;
+  skos:definition "A generically dependent continuant that combines some legal content with the content succeeding it in part, as they stand during some temporal region."@en ;
+  rdfs:comment "Whether a consolidated version is itself legal content depends on the legal system. Consolidations by the EU Publications Office have no legal force; a United States Code title enacted as positive law does. The pattern therefore does not declare consolidated version disjoint from legal content: an enacted consolidation is asserted to be both, and established by its enactment (LOF-P-010)."@en ;
+  rdfs:subClassOf obo:BFO_0000031 ,
+    [ a owl:Restriction ; owl:onProperty lof:ODP005_0001104 ; owl:someValuesFrom lof:ODP001_0001001 ] ,
+    [ a owl:Restriction ; owl:onProperty lof:ODP005_0001105 ; owl:someValuesFrom obo:BFO_0000008 ] .
+
+lof:ODP005_0001003 a owl:Class ;
+  rdfs:label "compliance period"@en ;
+  skos:definition "A temporal region within which some first-order legal position is to be discharged."@en ;
+  rdfs:comment "A defined class: a region is a compliance period by being the period some position is due within. A position due within a compliance period and undischarged during it (LOF-ODP-004) was not discharged in time; that conclusion is drawn by SPARQL, since OWL cannot compare date-times. Where legal content sets a standard rather than a fixed limit (GDPR Art. 33(1): without undue delay and, where feasible, within 72 hours), the compliance period records the fixed limit, and whether a late discharge was nonetheless lawful is a matter for the rule layer."@en ;
+  owl:equivalentClass [ owl:intersectionOf ( obo:BFO_0000008
+      [ a owl:Restriction ; owl:onProperty [ owl:inverseOf lof:ODP005_0001106 ] ; owl:someValuesFrom lof:ODP003_0001009 ] ) ] .
+
+
+##### Object properties #####
+
+lof:ODP005_0001100 a owl:ObjectProperty ;
+  rdfs:label "amends"@en ;
+  skos:definition "A relation between a legal act and legal content established earlier, such that the act establishes content succeeding it, or ends, suspends, or alters its force or scope."@en ;
+  rdfs:comment "The subject is the act, as in LOF-ODP-001, so that who amended, when, and under what power are recorded. For the relation between the texts themselves use succeeds. Close match to ELI eli:amends, which relates legal resources."@en ;
+  rdfs:domain lof:ODP001_0001000 ; rdfs:range lof:ODP001_0001001 .
+
+lof:ODP005_0001101 a owl:ObjectProperty ;
+  rdfs:label "repeals"@en ;
+  skos:definition "A relation between a legal act and legal content established earlier, such that the act establishes that the content ceases to be in force."@en ;
+  rdfs:subPropertyOf lof:ODP005_0001100 .
+
+lof:ODP005_0001102 a owl:ObjectProperty ;
+  rdfs:label "in force during"@en ;
+  skos:definition "A relation between legal content and a maximal temporal region throughout which the content is part of the law in force."@en ;
+  rdfs:comment "Maximal: the region runs from entry into force to the end of force, not some part of it. Content suspended and revived is in force during two regions. A region with no recorded last instant is either still running or has an end not recorded; the pattern does not distinguish them. Close match to ELI eli:first_date_entry_in_force and eli:date_no_longer_in_force."@en ;
+  rdfs:domain lof:ODP001_0001001 ; rdfs:range obo:BFO_0000008 .
+
+lof:ODP005_0001103 a owl:ObjectProperty ;
+  rdfs:label "applies during"@en ;
+  skos:definition "A relation between legal content and a maximal temporal region such that the content directly governs what occurs during that region."@en ;
+  rdfs:comment "Separate from in force during because the two come apart: the General Data Protection Regulation was in force from 24 May 2016 and applied from 25 May 2018; retroactive content applies during a region before it is in force; repealed content continues to govern facts that occurred while it applied. Asserted only of content that is directly applicable. A directive, a non-self-executing treaty, or a uniform act not yet adopted is in force without applying to private conduct; what applies is the content that transposes or adopts it. Close match to ELI eli:date_applicability."@en ;
+  rdfs:domain lof:ODP001_0001001 ; rdfs:range obo:BFO_0000008 .
+
+lof:ODP005_0001104 a owl:ObjectProperty ;
+  rdfs:label "consolidates"@en ;
+  skos:definition "A relation between a consolidated version and legal content that it combines."@en ;
+  rdfs:comment "A consolidated version consolidates both the base content and each item of content succeeding it in part. Close match to ELI eli:consolidates."@en ;
+  rdfs:domain lof:ODP005_0001002 ; rdfs:range lof:ODP001_0001001 .
+
+lof:ODP005_0001105 a owl:ObjectProperty ;
+  rdfs:label "states the law during"@en ;
+  skos:definition "A relation between a consolidated version and a temporal region during which it correctly combines the legal content in force."@en ;
+  rdfs:comment "Its own region, not that of the content consolidated: a consolidation stops stating the law at the next amendment, while the base content stays in force."@en ;
+  rdfs:domain lof:ODP005_0001002 ; rdfs:range obo:BFO_0000008 .
+
+lof:ODP005_0001106 a owl:ObjectProperty ;
+  rdfs:label "due within"@en ;
+  skos:definition "A relation between a first-order legal position and a temporal region within which the position is to be discharged."@en ;
+  rdfs:comment "For a duty, the period within which the required conduct must occur; for a claim, the period within which its correlative duty must be discharged. Second-order positions are exercised rather than discharged, so periods for exercising a power (a limitation period, a time to appeal) are not covered (open question)."@en ;
+  rdfs:domain lof:ODP003_0001009 ; rdfs:range obo:BFO_0000008 .
+
+lof:ODP005_0001107 a owl:ObjectProperty ;
+  rdfs:label "computed from"@en ;
+  skos:definition "A relation between a temporal region and an occurrent from which, according to legal content, the region is computed."@en ;
+  rdfs:comment "The region need not begin at the occurrent: under Article 3(1) of Regulation (EEC, Euratom) No 1182/71, the moment of the event does not fall within a period expressed in hours, nor the day of the event within one expressed in days. The computation rule is type-level and belongs to the rule layer; this relation records, for a particular period, the occurrence it was computed from."@en ;
+  rdfs:domain obo:BFO_0000008 ; rdfs:range obo:BFO_0000003 .
+
+lof:ODP005_0001108 a owl:ObjectProperty ;
+  rdfs:label "succeeds"@en ;
+  skos:definition "A relation between two items of legal content such that the first replaces the second, in whole or in part, from the time the first is in force."@en ;
+  rdfs:comment "Records that legal content is succeeded, not changed: the amended provision is unchanged, and a new provision takes its place in the law in force. Typically the succeeding content is established by an amending act that amends the succeeded content."@en ;
+  rdfs:domain lof:ODP001_0001001 ; rdfs:range lof:ODP001_0001001 .
+
+
+##### Data property #####
+
+lof:ODP005_0001200 a owl:DatatypeProperty , owl:FunctionalProperty ;
+  rdfs:label "has date-time value"@en ;
+  skos:definition "A relation between a temporal instant and the date and time, with time zone, at which it falls."@en ;
+  rdfs:comment "Values are xsd:dateTimeStamp, which is in the OWL 2 datatype map and requires a time zone; xsd:date, xsd:duration, and the xsd:g* types are not in the map. A region's bounds are its BFO first and last instants (has first instant, has last instant). Regions are closed, and values are recorded to the second. Where the law gives a date and no time, the choice of time zone is a convention to be stated (for EU acts, midnight Brussels time), not a rule of the source. Close match to OWL-Time time:inXSDDateTimeStamp on a time:Instant."@en ;
+  rdfs:domain obo:BFO_0000203 ; rdfs:range xsd:dateTimeStamp .

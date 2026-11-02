@@ -1,0 +1,173 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix lof: <https://w3id.org/lof/> .
+@prefix ex: <https://example.org/gdpr/> .
+
+# Worked example for LOF-ODP-005.
+# Real: Regulation (EU) 2016/679 (GDPR; OJ L 119, 4.5.2016), Arts 33(1), 83(4)(a),
+# 94(1), 99; Directive 95/46/EC (OJ L 281, 23.11.1995); the UK Data Protection
+# Act 1998, in force from 1 March 2000 and repealed with effect from 25 May 2018.
+# Hypothetical: the controller and its two breaches.
+# Conventions (stated, not rules of the sources): regions are closed and recorded
+# to the second, in UTC; an EU date with no time is taken as midnight Brussels time.
+<https://w3id.org/lof/odp-005/examples/gdpr-timeline.ttl> a owl:Ontology ;
+  owl:imports <https://w3id.org/lof/odp-005.owl> .
+
+## The acts
+
+ex:euLegislature a obo:BFO_0000040 ; rdfs:label "European Parliament and Council" .
+ex:ukParliament a obo:BFO_0000040 ; rdfs:label "United Kingdom Parliament" .
+
+ex:gdprEnactment a lof:ODP001_0001003 ;                    # enactment
+  rdfs:label "adoption of Regulation (EU) 2016/679" ;
+  obo:BFO_0000057 ex:euLegislature ;
+  lof:ODP001_0001100 ex:gdpr ;                               # establishes
+  lof:ODP005_0001101 ex:directive9546 .                      # repeals (Art. 94(1)), with effect from 25 May 2018
+
+ex:dpa1998Enactment a lof:ODP001_0001003 ;
+  rdfs:label "enactment of the Data Protection Act 1998" ;
+  obo:BFO_0000057 ex:ukParliament ;
+  lof:ODP001_0001100 ex:dpa1998 ;
+  lof:ODP001_0001102 ex:directive9546 .                      # performed under: transposition
+
+## The content and its periods
+
+ex:gdpr a lof:ODP001_0001001 ;
+  rdfs:label "General Data Protection Regulation" ;
+  lof:ODP005_0001102 ex:gdprInForce ;                        # in force during (Art. 99(1))
+  lof:ODP005_0001103 ex:gdprApplies ;                        # applies during (Art. 99(2))
+  lof:ODP005_0001108 ex:directive9546 .                      # succeeds
+
+# A directive binds the Member States; it is in force but does not apply to
+# private processing, which national transposing law governs.
+ex:directive9546 a lof:ODP001_0001001 ;
+  rdfs:label "Data Protection Directive 95/46/EC" ;
+  lof:ODP005_0001102 ex:directiveInForce .
+
+ex:dpa1998 a lof:ODP001_0001001 ;
+  rdfs:label "Data Protection Act 1998 (United Kingdom)" ;
+  lof:ODP005_0001102 ex:dpaInForce ;
+  lof:ODP005_0001103 ex:dpaInForce .
+
+ex:gdprInForce a obo:BFO_0000202 ; rdfs:label "GDPR in force" ;
+  obo:BFO_0000222 ex:t20160524 .                             # has first instant
+ex:gdprApplies a obo:BFO_0000202 ; rdfs:label "GDPR applies" ;
+  obo:BFO_0000222 ex:t20180525 .
+ex:directiveInForce a obo:BFO_0000202 ; rdfs:label "Directive 95/46/EC in force" ;
+  obo:BFO_0000222 ex:t19951213 ; obo:BFO_0000224 ex:t20180524end .   # has last instant
+ex:dpaInForce a obo:BFO_0000202 ; rdfs:label "Data Protection Act 1998 in force" ;
+  obo:BFO_0000222 ex:t20000301 ; obo:BFO_0000224 ex:t20180524endUK .
+
+ex:t19951213 a obo:BFO_0000203 ; rdfs:label "13 December 1995, 00:00 Brussels" ;
+  lof:ODP005_0001200 "1995-12-12T23:00:00Z"^^xsd:dateTimeStamp .
+ex:t20000301 a obo:BFO_0000203 ; rdfs:label "1 March 2000, 00:00 London" ;
+  lof:ODP005_0001200 "2000-03-01T00:00:00Z"^^xsd:dateTimeStamp .
+ex:t20160524 a obo:BFO_0000203 ; rdfs:label "24 May 2016, 00:00 Brussels" ;
+  lof:ODP005_0001200 "2016-05-23T22:00:00Z"^^xsd:dateTimeStamp .
+ex:t20180524end a obo:BFO_0000203 ; rdfs:label "end of 24 May 2018, Brussels" ;
+  lof:ODP005_0001200 "2018-05-24T21:59:59Z"^^xsd:dateTimeStamp .
+ex:t20180524endUK a obo:BFO_0000203 ; rdfs:label "end of 24 May 2018, London" ;
+  lof:ODP005_0001200 "2018-05-24T22:59:59Z"^^xsd:dateTimeStamp .
+ex:t20180525 a obo:BFO_0000203 ; rdfs:label "25 May 2018, 00:00 Brussels" ;
+  lof:ODP005_0001200 "2018-05-24T22:00:00Z"^^xsd:dateTimeStamp .
+
+## A consolidated version, with its own period (no legal force in the EU)
+
+ex:gdprConsolidated2016 a lof:ODP005_0001002 ;
+  rdfs:label "consolidated text 02016R0679-20160504" ;
+  lof:ODP005_0001104 ex:gdpr ;                               # consolidates
+  lof:ODP005_0001105 ex:consolidation2016Period .            # states the law during
+ex:consolidation2016Period a obo:BFO_0000202 ;
+  rdfs:label "period stated by consolidation 02016R0679-20160504 (end not recorded here)" ;
+  obo:BFO_0000222 ex:t20160524 .
+
+## A processing operation in March 2017
+
+ex:processing2017 a obo:BFO_0000015 ; rdfs:label "Acme's processing of customer data, March 2017" ;
+  obo:BFO_0000199 ex:march2017 .                             # occupies temporal region
+ex:march2017 a obo:BFO_0000202 ; rdfs:label "March 2017" ;
+  obo:BFO_0000222 ex:t20170301 ; obo:BFO_0000224 ex:t20170331end .
+ex:t20170301 a obo:BFO_0000203 ; rdfs:label "1 March 2017, 00:00 UTC" ;
+  lof:ODP005_0001200 "2017-03-01T00:00:00Z"^^xsd:dateTimeStamp .
+ex:t20170331end a obo:BFO_0000203 ; rdfs:label "end of 31 March 2017, UTC" ;
+  lof:ODP005_0001200 "2017-03-31T23:59:59Z"^^xsd:dateTimeStamp .
+
+## Article 33(1): notify "without undue delay and, where feasible, not later
+## than 72 hours" after becoming aware. The compliance period records the fixed
+## limit. Under Art. 3 of Regulation 1182/71 the moment of awareness is
+## excluded, so the 72 hours start at the beginning of the next hour.
+
+ex:acme a obo:BFO_0000040 ; rdfs:label "Acme Retail Ltd" .
+ex:authority a obo:BFO_0000040 ; rdfs:label "competent supervisory authority" .
+
+ex:awareness1 a obo:BFO_0000035 ; rdfs:label "Acme becomes aware of breach 1" ;   # process boundary
+  obo:BFO_0000199 ex:t20260302a .
+ex:t20260302a a obo:BFO_0000203 ; rdfs:label "2 March 2026, 08:40 UTC" ;
+  lof:ODP005_0001200 "2026-03-02T08:40:00Z"^^xsd:dateTimeStamp .
+ex:window1 a obo:BFO_0000202 ; rdfs:label "72 hours from awareness of breach 1" ;
+  lof:ODP005_0001107 ex:awareness1 ;                          # computed from
+  obo:BFO_0000222 ex:window1Start ; obo:BFO_0000224 ex:window1End .
+ex:window1Start a obo:BFO_0000203 ; rdfs:label "2 March 2026, 09:00 UTC" ;
+  lof:ODP005_0001200 "2026-03-02T09:00:00Z"^^xsd:dateTimeStamp .
+ex:window1End a obo:BFO_0000203 ; rdfs:label "end of the 72 hours for breach 1" ;
+  lof:ODP005_0001200 "2026-03-05T08:59:59Z"^^xsd:dateTimeStamp .
+
+# Notified on 6 March without reasons for the delay: not discharged in time.
+ex:notifyDuty1 a lof:ODP003_0001002 ;                         # duty
+  rdfs:label "Acme's duty to notify breach 1" ;
+  lof:ODP003_0001100 ex:acme ; lof:ODP003_0001101 ex:gdpr ;
+  lof:ODP003_0001102 ex:notifyClaim1 ;
+  lof:ODP004_0001102 ex:awareness1 ;                          # triggered by
+  lof:ODP005_0001106 ex:window1 ;                             # due within
+  lof:ODP004_0001106 ex:window1 .                             # undischarged during
+ex:notifyClaim1 a lof:ODP003_0001001 ;
+  rdfs:label "authority's claim to notification of breach 1" ;
+  lof:ODP003_0001100 ex:authority ; lof:ODP003_0001101 ex:gdpr .
+
+# Article 83(4)(a). A fine is a sanction, not a remedy in the ODP-004 sense of
+# making good the failure, so the power is linked by its trigger, not by
+# 'remedies' (see open question 5).
+ex:finePower1 a lof:ODP003_0001005 ;                          # power
+  rdfs:label "authority's power to fine Acme for breach 1" ;
+  lof:ODP003_0001100 ex:authority ; lof:ODP003_0001101 ex:gdpr ;
+  lof:ODP003_0001102 ex:fineLiability1 ;
+  lof:ODP004_0001102 ex:window1End .                          # triggered by
+ex:fineLiability1 a lof:ODP003_0001006 ;
+  rdfs:label "Acme's liability to be fined for breach 1" ;
+  lof:ODP003_0001100 ex:acme ; lof:ODP003_0001101 ex:gdpr .
+
+## A second breach, notified in time (no undischarged-during assertion)
+
+ex:awareness2 a obo:BFO_0000035 ; rdfs:label "Acme becomes aware of breach 2" ;
+  obo:BFO_0000199 ex:t20260410a .
+ex:t20260410a a obo:BFO_0000203 ; rdfs:label "10 April 2026, 14:15 UTC" ;
+  lof:ODP005_0001200 "2026-04-10T14:15:00Z"^^xsd:dateTimeStamp .
+ex:window2 a obo:BFO_0000202 ; rdfs:label "72 hours from awareness of breach 2" ;
+  lof:ODP005_0001107 ex:awareness2 ;
+  obo:BFO_0000222 ex:window2Start ; obo:BFO_0000224 ex:window2End .
+ex:window2Start a obo:BFO_0000203 ; rdfs:label "10 April 2026, 15:00 UTC" ;
+  lof:ODP005_0001200 "2026-04-10T15:00:00Z"^^xsd:dateTimeStamp .
+ex:window2End a obo:BFO_0000203 ; rdfs:label "end of the 72 hours for breach 2" ;
+  lof:ODP005_0001200 "2026-04-13T14:59:59Z"^^xsd:dateTimeStamp .
+ex:notifyDuty2 a lof:ODP003_0001002 ;
+  rdfs:label "Acme's duty to notify breach 2" ;
+  lof:ODP003_0001100 ex:acme ; lof:ODP003_0001101 ex:gdpr ;
+  lof:ODP003_0001102 ex:notifyClaim2 ;
+  lof:ODP004_0001102 ex:awareness2 ;
+  lof:ODP005_0001106 ex:window2 .
+ex:notifyClaim2 a lof:ODP003_0001001 ;
+  rdfs:label "authority's claim to notification of breach 2" ;
+  lof:ODP003_0001100 ex:authority ; lof:ODP003_0001101 ex:gdpr .
+
+## A deliberate defect for the shapes: a period that ends before it begins
+
+ex:badPeriod a obo:BFO_0000202 ; rdfs:label "mistyped transition period" ;
+  obo:BFO_0000222 ex:badStart ; obo:BFO_0000224 ex:badEnd .
+ex:badStart a obo:BFO_0000203 ; rdfs:label "1 January 2020" ;
+  lof:ODP005_0001200 "2020-01-01T00:00:00Z"^^xsd:dateTimeStamp .
+ex:badEnd a obo:BFO_0000203 ; rdfs:label "31 December 2019" ;
+  lof:ODP005_0001200 "2019-12-31T00:00:00Z"^^xsd:dateTimeStamp .
+ex:transitionalRule a lof:ODP001_0001001 ; rdfs:label "transitional rule (hypothetical)" ;
+  lof:ODP005_0001103 ex:badPeriod .

@@ -1,0 +1,12 @@
+# CQ3. What amended or repealed this content, in what act, what succeeds it,
+# and when did its force end?
+PREFIX lof: <https://w3id.org/lof/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?content ?act ?kind ?successor ?forceEnded WHERE {
+  ?a lof:ODP005_0001100 ?c ; rdfs:label ?act . ?c rdfs:label ?content .
+  BIND(IF(EXISTS { ?a lof:ODP005_0001101 ?c }, "repeal", "amendment") AS ?kind)
+  OPTIONAL { ?s lof:ODP005_0001108 ?c ; rdfs:label ?successor }
+  OPTIONAL { ?c lof:ODP005_0001102/obo:BFO_0000224/lof:ODP005_0001200 ?forceEnded }
+}

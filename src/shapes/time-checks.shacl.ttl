@@ -1,0 +1,70 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix lof: <https://w3id.org/lof/> .
+@prefix t: <https://w3id.org/lof/odp-005/shapes#> .
+
+# LOF-ODP-005 shapes. Run against a REASONED data graph (compliance periods
+# are recognized by inference). Violations are data errors; warnings are gaps
+# a person should look at. Region bounds are BFO instants (has first instant,
+# has last instant) carrying 'has date-time value'.
+
+t:InstantValue a sh:NodeShape ;
+  sh:targetObjectsOf obo:BFO_0000222, obo:BFO_0000224 ;
+  sh:property [ sh:path lof:ODP005_0001200 ; sh:maxCount 1 ; sh:datatype xsd:dateTimeStamp ;
+    sh:message "An instant bounding a region needs at most one date-time value, with a time zone (xsd:dateTimeStamp)." ] .
+
+t:PeriodBounds a sh:NodeShape ;
+  sh:targetSubjectsOf obo:BFO_0000222 ;
+  sh:sparql [
+    sh:message "A temporal region ends before it begins." ;
+    sh:select """
+      PREFIX obo: <http://purl.obolibrary.org/obo/>
+      PREFIX lof: <https://w3id.org/lof/>
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      SELECT $this WHERE {
+        $this obo:BFO_0000222/lof:ODP005_0001200 ?s ; obo:BFO_0000224/lof:ODP005_0001200 ?e .
+        FILTER(xsd:dateTime(STR(?e)) < xsd:dateTime(STR(?s)))
+      }""" ] .
+
+t:CompliancePeriodHasEnd a sh:NodeShape ;
+  sh:targetClass lof:ODP005_0001003 ;
+  sh:property [ sh:path ( obo:BFO_0000224 lof:ODP005_0001200 ) ; sh:minCount 1 ; sh:severity sh:Warning ;
+    sh:message "A compliance period has no recorded last instant, so no position due within it can be found overdue." ] ;
+  sh:property [ sh:path lof:ODP005_0001107 ; sh:minCount 1 ; sh:severity sh:Warning ;
+    sh:message "A compliance period does not record the occurrence it is computed from." ] .
+
+t:RepealedContentEndsForce a sh:NodeShape ;
+  sh:targetObjectsOf lof:ODP005_0001101 ;
+  sh:severity sh:Warning ;
+  sh:sparql [
+    sh:message "Legal content is repealed, but no last instant of its period in force is recorded." ;
+    sh:select """
+      PREFIX lof: <https://w3id.org/lof/>
+      PREFIX obo: <http://purl.obolibrary.org/obo/>
+      SELECT $this WHERE {
+        FILTER NOT EXISTS { $this lof:ODP005_0001102/obo:BFO_0000224/lof:ODP005_0001200 ?end }
+      }""" ] .
+
+t:AppliesWithinForce a sh:NodeShape ;
+  sh:targetSubjectsOf lof:ODP005_0001103 ;
+  sh:severity sh:Warning ;
+  sh:sparql [
+    sh:message "Legal content applies from a time before it is recorded as in force." ;
+    sh:select """
+      PREFIX lof: <https://w3id.org/lof/>
+      PREFIX obo: <http://purl.obolibrary.org/obo/>
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      SELECT $this WHERE {
+        $this lof:ODP005_0001103/obo:BFO_0000222/lof:ODP005_0001200 ?a ;
+              lof:ODP005_0001102/obo:BFO_0000222/lof:ODP005_0001200 ?f .
+        FILTER(xsd:dateTime(STR(?a)) < xsd:dateTime(STR(?f)))
+      }""" ] .
+
+t:ConsolidationPeriod a sh:NodeShape ;
+  sh:targetClass lof:ODP005_0001002 ;
+  sh:property [ sh:path lof:ODP005_0001104 ; sh:class lof:ODP001_0001001 ; sh:minCount 1 ;
+    sh:message "A consolidated version consolidates no legal content." ] ;
+  sh:property [ sh:path lof:ODP005_0001105 ; sh:minCount 1 ;
+    sh:message "A consolidated version does not say during what period it states the law." ] .

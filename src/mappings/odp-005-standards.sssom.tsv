@@ -1,0 +1,30 @@
+# curie_map:
+#   lof: https://w3id.org/lof/
+#   eli: http://data.europa.eu/eli/ontology#
+#   akn: http://docs.oasis-open.org/legaldocml/ns/akn/3.0/
+#   time: http://www.w3.org/2006/time#
+#   lomo: http://data.europa.eu/leg/lomo#
+#   lrml: http://docs.oasis-open.org/legalruleml/ns/v1.0/
+#   skos: http://www.w3.org/2004/02/skos/core#
+#   semapv: https://w3id.org/semapv/vocab/
+# mapping_set_id: https://w3id.org/lof/odp-005/mappings/odp-005-standards.sssom.tsv
+# mapping_set_description: Alignment of LOF-ODP-005 with legal and temporal standards (LOF-P-015). Draft for review.
+# license: https://creativecommons.org/licenses/by/4.0/
+# creator_label: David R. Koepsell
+# mapping_date: 2026-11-02
+# comment: Akoma Ntoso terms are XML elements and attribute values, not RDF terms; their CURIEs name the element for reference only.
+subject_id	subject_label	predicate_id	object_id	object_label	mapping_justification	comment
+lof:ODP005_0001100	amends	skos:closeMatch	eli:amends	amends	semapv:ManualMappingCuration	ELI relates legal resource to legal resource; here the subject is the legal act and the object is legal content.
+lof:ODP005_0001101	repeals	skos:closeMatch	eli:repeals	repeals	semapv:ManualMappingCuration	As for amends.
+lof:ODP005_0001108	succeeds	skos:relatedMatch	akn:textualMod	textual modification	semapv:ManualMappingCuration	Akoma Ntoso substitution and insertion record succession at the level of the text.
+lof:ODP005_0001102	in force during	skos:closeMatch	eli:first_date_entry_in_force	first date of entry into force	semapv:ManualMappingCuration	The ELI property gives the first instant of the region; eli:date_no_longer_in_force gives the end.
+lof:ODP005_0001102	in force during	skos:closeMatch	akn:forceMod	force modification	semapv:ManualMappingCuration	entryIntoForce, endOfEnactment, postponementOfEntryIntoForce.
+lof:ODP005_0001103	applies during	skos:closeMatch	eli:date_applicability	date of applicability	semapv:ManualMappingCuration	
+lof:ODP005_0001103	applies during	skos:relatedMatch	akn:efficacyMod	efficacy modification	semapv:ManualMappingCuration	Efficacy covers application and its suspension.
+lof:ODP005_0001103	applies during	skos:relatedMatch	lomo:TemporalSpecification	temporal specification	semapv:ManualMappingCuration	With LOMO function validity.
+lof:ODP005_0001002	consolidated version	skos:closeMatch	eli:LegalExpression	legal expression	semapv:ManualMappingCuration	A consolidated ELI expression; see also eli:consolidates.
+lof:ODP005_0001104	consolidates	skos:closeMatch	eli:consolidates	consolidates	semapv:ManualMappingCuration	
+lof:ODP005_0001106	due within	skos:relatedMatch	lomo:TemporalSpecification	temporal specification	semapv:ManualMappingCuration	With LOMO function deadline.
+lof:ODP005_0001107	computed from	skos:relatedMatch	lomo:trigger	trigger	semapv:ManualMappingCuration	
+lof:ODP005_0001200	has date-time value	skos:exactMatch	time:inXSDDateTimeStamp	in XSD date-time stamp	semapv:ManualMappingCuration	On a BFO temporal instant rather than a time:Instant.
+lof:ODP005_0001200	has date-time value	skos:relatedMatch	lomo:instant	instant	semapv:ManualMappingCuration	LOMO uses datatypes outside the OWL 2 datatype map.

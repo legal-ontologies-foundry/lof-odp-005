@@ -1,0 +1,12 @@
+# CQ4. Which consolidated version states the law during a period, and what
+# content does it combine?
+PREFIX lof: <https://w3id.org/lof/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?version ?combines ?from ?until WHERE {
+  ?v a lof:ODP005_0001002 ; rdfs:label ?version ;
+     lof:ODP005_0001104/rdfs:label ?combines ;
+     lof:ODP005_0001105 ?r . ?r obo:BFO_0000222/lof:ODP005_0001200 ?from .
+  OPTIONAL { ?r obo:BFO_0000224/lof:ODP005_0001200 ?until }
+}

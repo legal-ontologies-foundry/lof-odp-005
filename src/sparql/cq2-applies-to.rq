@@ -1,0 +1,23 @@
+# CQ2. Which legal content applies to a given occurrence, as distinct from
+# what is in force when it occurs? (Occurrence time = its region's first instant.)
+PREFIX lof: <https://w3id.org/lof/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?occurrence ?applies ?inForceButNotApplying WHERE {
+  ?p obo:BFO_0000199/obo:BFO_0000222/lof:ODP005_0001200 ?tv ; rdfs:label ?occurrence .
+  BIND(xsd:dateTime(STR(?tv)) AS ?t)
+  OPTIONAL {
+    ?c lof:ODP005_0001103 ?a ; rdfs:label ?applies .
+    ?a obo:BFO_0000222/lof:ODP005_0001200 ?as .
+    OPTIONAL { ?a obo:BFO_0000224/lof:ODP005_0001200 ?ae }
+    FILTER(xsd:dateTime(STR(?as)) <= ?t && (!BOUND(?ae) || xsd:dateTime(STR(?ae)) >= ?t)) }
+  OPTIONAL {
+    ?d lof:ODP005_0001102 ?f ; rdfs:label ?inForceButNotApplying .
+    ?f obo:BFO_0000222/lof:ODP005_0001200 ?fs .
+    OPTIONAL { ?f obo:BFO_0000224/lof:ODP005_0001200 ?fe }
+    FILTER(xsd:dateTime(STR(?fs)) <= ?t && (!BOUND(?fe) || xsd:dateTime(STR(?fe)) >= ?t))
+    FILTER NOT EXISTS { ?d lof:ODP005_0001103 ?a2 . ?a2 obo:BFO_0000222/lof:ODP005_0001200 ?a2s .
+      OPTIONAL { ?a2 obo:BFO_0000224/lof:ODP005_0001200 ?a2e }
+      FILTER(xsd:dateTime(STR(?a2s)) <= ?t && (!BOUND(?a2e) || xsd:dateTime(STR(?a2e)) >= ?t)) } }
+} ORDER BY ?occurrence

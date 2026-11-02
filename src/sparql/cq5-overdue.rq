@@ -1,0 +1,14 @@
+# CQ5. Which positions were not discharged within the period they were due
+# within, computed from what occurrence, and what positions are triggered by
+# the end of that period? (Uses LOF-ODP-004: triggered by, undischarged during.)
+PREFIX lof: <https://w3id.org/lof/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT ?position ?holder ?computedFrom ?dueBy ?triggered WHERE {
+  ?p lof:ODP005_0001106 ?w ; lof:ODP004_0001106 ?w ; rdfs:label ?position ;
+     lof:ODP003_0001100/rdfs:label ?holder .
+  OPTIONAL { ?w lof:ODP005_0001107/rdfs:label ?computedFrom }
+  OPTIONAL { ?w obo:BFO_0000224 ?end . ?end lof:ODP005_0001200 ?dueBy .
+             OPTIONAL { ?q lof:ODP004_0001102 ?end ; rdfs:label ?triggered } }
+}
